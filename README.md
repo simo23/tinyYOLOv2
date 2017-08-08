@@ -26,7 +26,7 @@ Just to be clear, this implementation is called "tiny-yolo-voc" on pjreddie's si
 - Clone the project and place it where you want
 - Download the binary file (~60MB) from pjreddie's site: https://pjreddie.com/media/files/tiny-yolo-voc.weights and place it into the folder where the scripts are
 - Launch test.py or test_webcam.py. Change the input_img_path and the weights_path in the main if you want. The code is now configured to run with weights and input image in the same folder as the script. 
-- If you are launching them for the first time, the binary file will be extracted and a ckpt will be created. Next time only the ckpt will be used!
+- If you are launching them for the first time, the weights will be extracted from the binary file and a ckpt will be created. Next time only the ckpt will be used!
 
 ### Requirements:
 
@@ -34,7 +34,7 @@ I've implemented everything with Tensorflow 1.0, Ubuntu 16.04, Numpy 1.13.0, Pyt
 
 
 
-#### How to use the binary weights file ( If you want to use it in another projects, here it is already done ) 
+#### How to use the binary weights file ( Only if you want to use it in another projects, here it is already done ) 
 
 I've been struggling on understanding how the binary weights file was written. I hope to save you some time by explaining how I imported the weights into a Tensorflow network:
 
@@ -48,7 +48,7 @@ I've been struggling on understanding how the binary weights file was written. I
 - IMPORTANT: in order to obtain the correct results from the weights they need to be DENORMALIZED according to Batch Normalization. It can be done in two ways: define the network with Batch Normalization and use the weights as they are OR define the net without BN ( this implementation ) and DENORMALIZE the weights. ( details are in weights_loader.py )
 - In order to verify that the weights extraction is succesfull, I check the total number of params with the number of weights into the weight file. They are both 15867885 in my case.
 
-#### How to postprocess the predictions ( If you want to use it in another projects, here it is already done ) 
+#### How to postprocess the predictions ( Only if you want to use it in another projects, here it is already done ) 
 
 Another key point is how the predictions tensor is made. It is a 13x13x125 tensor. To process it better:
 
@@ -73,7 +73,8 @@ for row in range(n_grid_cells):
       tx, ty, tw, th, tc = predictions[row, col, b, :5]
       
       # IMPORTANT: (416) / (13) = 32! The coordinates and shape values are parametrized w.r.t center of the grid cell
-      # With the iterations of [row,col] they return to their original positions
+      # They are parameterized to be in [0,1] so easier for the network to predict and learn
+      # With the iterations on every grid cell at [row,col] they return to their original positions
       
       # The x,y coordinates are: (pre-defined coordinates of the grid cell [row,col] + parametrized offset)*32 
       center_x = (float(col) + sigmoid(tx)) * 32.0
@@ -90,7 +91,7 @@ for row in range(n_grid_cells):
       
 ```
 
-YOLOv2 predicts parametrized values that must be converted to full size by multiplying them by 32! You can see other EQUIVALENT ways to do this but this one works fine.
+YOLOv2 predicts parametrized values that must be converted to full size by multiplying them by 32! You can see other EQUIVALENT ways to do this but this one works fine. I've seen someone who, instead of multiplying by 32, divides by 13 and then multiplies by 416 which at the end equals a single multiplication by 32.
 
 
 #### Notes
