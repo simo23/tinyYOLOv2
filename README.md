@@ -30,6 +30,8 @@ Just to be clear, this implementation is called "tiny-yolo-voc" on pjreddie's si
 
 I've implemented everything with Tensorflow 1.0, Ubuntu 16.04, Numpy 1.13.0, Python 3.4, OpenCV 3.0
 
+
+
 #### How to use the binary weights file ( If you want to use it in another projects, here it is already done ) 
 
 I've been struggling on understanding how the binary weights file was written. I hope to save you some time by explaining how I imported the weights into a Tensorflow network:
@@ -87,6 +89,7 @@ for row in range(n_grid_cells):
 ```
 
 YOLOv2 predicts parametrized coordinates that must be converted to full size by multiplying them by 32! You can see other EQUIVALENT ways to do this but this one works. 
+
 
 #### Notes
 
