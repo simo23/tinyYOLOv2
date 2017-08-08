@@ -8,7 +8,7 @@ The output of this implementation on the test image "dog.jpg" is the following:
 
 Just to be clear, this implementation is called "tiny-yolo-voc" on pjreddie's site and can be found here:
 
-![alt text](https://github.com/simo23/tinyYOLOv2/blob/master/tinyolo.png "YOLOv2 site")
+![alt text](https://github.com/simo23/tinyYOLOv2/blob/master/pjsite.png "YOLOv2 site")
 
 #### This is a specific implementation of "tiny-yolo-voc" but the code could be re-used to import other configurations! Of course you will need to change the network architecture and hyperparameters according to the "cfg" file you want to use.
 
