@@ -12,14 +12,14 @@ Just to be clear, this implementation is called "tiny-yolo-voc" on pjreddie's si
 
 ![alt text](https://github.com/simo23/tinyYOLOv2/blob/master/pjsite.png "YOLOv2 site")
 
-#### This is a specific implementation of "tiny-yolo-voc" but the code could be re-used to import other configurations! Of course you will need to change the network architecture and hyperparameters according to the "cfg" file you want to use.
+#### This is a specific implementation of "tiny-yolo-voc" but the code could be re-used to import other configurations! You will need to change the network architecture and hyperparameters according to the "cfg" file you want to use.
 
 ### The code is organized in this way:
 
 - weights_loader.py : loads the weights from pjreddie's binary weights file into the tensorflow network and saves the ckpt
 - net.py : contains the definition of the Tiny YOLOv2 network as defined in pjreddie's cfg file https://github.com/pjreddie/darknet/blob/master/cfg/tiny-yolo-voc.cfg
 - test.py : performs detection on an input_image that you can define in the main. Outputs the input_image with B-Boxes
-- test_webcam.py: performs detection on the webcam
+- test_webcam.py: performs detection on the webcam. It is exactly like test.py but some functions are slightly modified to take directly the frames from the webcam as inputs (instead of the image_path).
 
 ### To use this code:
 
