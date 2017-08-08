@@ -30,7 +30,7 @@ Just to be clear, this implementation is called "tiny-yolo-voc" on pjreddie's si
 
 I've implemented everything with Tensorflow 1.0, Ubuntu 16.04, Numpy 1.13.0, Python 3.4, OpenCV 3.0
 
-#### How to use the binary weights file
+#### How to use the binary weights file ( If you want to use it in another projects, here it is already done ) 
 
 I've been struggling on understanding how the binary weights file was written. I hope to save you some time by explaining how I imported the weights into a Tensorflow network:
 
@@ -44,7 +44,7 @@ I've been struggling on understanding how the binary weights file was written. I
 - IMPORTANT: in order to obtain the correct results from the weights they need to be DENORMALIZED according to Batch Normalization. It can be done in two ways: define the network with Batch Normalization and use the weights as they are OR define the net without BN ( this implementation ) and DENORMALIZE the weights. ( details are in weights_loader.py )
 - In order to verify that the weights extraction is succesfull, I check the total number of params with the number of weights into the weight file. They are both 15867885 in my case.
 
-#### How to postprocess the predictions
+#### How to postprocess the predictions ( If you want to use it in another projects, here it is already done ) 
 
 Another key point is how the predictions tensor is made. It is a 13x13x125 tensor. To process it better:
 
