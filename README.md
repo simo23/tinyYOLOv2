@@ -42,7 +42,51 @@ I've been struggling on understanding how the binary weights file was written. I
 - IMPORTANT: the 'biases' here refer to the beta value of the Batch Normalization. It does not refer to the biases that must be added after the conv2d because they are set all to zero! ( According to the paper by Ioffe et al. https://arxiv.org/abs/1502.03167 ) 
 - IMPORTANT: the kernel weights are written in Caffe style which means they have shape = (out_dim, in_dim, height, width). They must be converted into Tensorflow style which has shape = (height, width, in_dim, out_dim)
 - IMPORTANT: in order to obtain the correct results from the weights they need to be DENORMALIZED according to Batch Normalization. It can be done in two ways: define the network with Batch Normalization and use the weights as they are OR define the net without BN ( this implementation ) and DENORMALIZE the weights. ( details are in weights_loader.py )
-- In order to verify that the weights extraction is succesfull, I check the total number of params with the number of weights into the weight file. They are both 15867885 in my case. 
+- In order to verify that the weights extraction is succesfull, I check the total number of params with the number of weights into the weight file. They are both 15867885 in my case.
+
+#### How to postprocess the predictions
+
+Another key point is how the predictions tensor is made. It is a 13x13x125 tensor. To process it better:
+
+- Convert the tensor to have shape = 13x13x5x25 = grid_cells x n_boxes_in_each_cell x n_predictions_for_each_box
+- The 25 predictions are: 4 coordinates (x,y,h,w), 1 Objectness score, 20 Class scores
+- Now access to the tensor in an easy way! E.g. predictions[row, col, b, :4] will return the 4 coords of the "b" B-Box which is in the [row,col] grid cell
+- The coordinates must be postprocessed according to the parametrization of YOLOv2. In my implementation it is made like this: 
+
+```python
+
+# Pre-defined anchors shapes!
+# They are not coordinates of the boxes, they are height and width of the 5 anchors defined by YOLOv2
+anchors = [1.08,1.19,  3.42,4.41,  6.63,11.38,  9.42,5.11,  16.62,10.52]
+image_height = image_width = 416
+n_grid_cells = 13
+n_b_boxes = 5
+
+for row in range(n_grid_cells):
+  for col in range(n_grid_cells):
+    for b in range(n_b_boxes):
+
+      tx, ty, tw, th, tc = predictions[row, col, b, :5]
+      
+      # IMPORTANT: (416) / (13) = 32! The coordinates are parametrized w.r.t center of the grid cell
+      # With the iterations of [row,col] they return to their original positions
+      
+      # The x,y coordinates are: (pre-defined coordinates of the grid cell [row,col] + parametrized offset)*32 
+      center_x = (float(col) + sigmoid(tx)) * 32.0
+      center_y = (float(row) + sigmoid(ty)) * 32.0
+
+      # Also the width and height must return to the original value by looking at the shape of the anchors
+      roi_w = np.exp(tw) * anchors[2*b + 0] * 32.0
+      roi_h = np.exp(th) * anchors[2*b + 1] * 32.0
+
+      final_confidence = sigmoid(tc)
+
+      class_predictions = predictions[row, col, b, 5:]
+      class_predictions = softmax(class_predictions)
+      
+```
+
+YOLOv2 predicts parametrized coordinates that must be converted to full size by multiplying them by 32! You can see other EQUIVALENT ways to do this but this one works. 
 
 #### Notes
 
