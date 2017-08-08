@@ -83,7 +83,8 @@ for row in range(n_grid_cells):
       # Also the width and height must return to the original value by looking at the shape of the anchors
       roi_w = np.exp(tw) * anchors[2*b + 0] * 32.0
       roi_h = np.exp(th) * anchors[2*b + 1] * 32.0
-
+      
+      # Compute the final objectness score (confidence that there is an object in the B-Box) 
       final_confidence = sigmoid(tc)
 
       class_predictions = predictions[row, col, b, 5:]
