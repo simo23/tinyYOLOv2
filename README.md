@@ -1,4 +1,6 @@
-## TinyYOLOv2 in Tensorflow: extract weights from binary file, assigns them to net, saves ckpt, performs detection on an input image or webcam. 
+# TinyYOLOv2 in Tensorflow made easier
+
+## This code: extract weights from binary file, assigns them to TF network, saves ckpt, performs detection on an input image or webcam
 
 I've been searching for a Tensorflow implementation of YOLOv2 but the darknet version and derivatives are not really easy to understand. This one is an hopefully easier-to-understand version of Tiny YOLOv2. The weight extraction, weights structure, weight assignment, network, inference and postprocessing are made as simple as possible.
 
@@ -51,9 +53,9 @@ I've been struggling on understanding how the binary weights file was written. I
 Another key point is how the predictions tensor is made. It is a 13x13x125 tensor. To process it better:
 
 - Convert the tensor to have shape = 13x13x5x25 = grid_cells x n_boxes_in_each_cell x n_predictions_for_each_box
-- The 25 predictions are: 4 coordinates (x,y,h,w), 1 Objectness score, 20 Class scores
-- Now access to the tensor in an easy way! E.g. predictions[row, col, b, :4] will return the 4 coords of the "b" B-Box which is in the [row,col] grid cell
-- The coordinates must be postprocessed according to the parametrization of YOLOv2. In my implementation it is made like this: 
+- The 25 predictions are: 2 coordinates and 2 shape values (x,y,h,w), 1 Objectness score, 20 Class scores
+- Now access to the tensor in an easy way! E.g. predictions[row, col, b, :4] will return the 2 coords and shape of the "b" B-Box which is in the [row,col] grid cell
+- They must be postprocessed according to the parametrization of YOLOv2. In my implementation it is made like this: 
 
 ```python
 
@@ -70,7 +72,7 @@ for row in range(n_grid_cells):
 
       tx, ty, tw, th, tc = predictions[row, col, b, :5]
       
-      # IMPORTANT: (416) / (13) = 32! The coordinates are parametrized w.r.t center of the grid cell
+      # IMPORTANT: (416) / (13) = 32! The coordinates and shape values are parametrized w.r.t center of the grid cell
       # With the iterations of [row,col] they return to their original positions
       
       # The x,y coordinates are: (pre-defined coordinates of the grid cell [row,col] + parametrized offset)*32 
@@ -88,7 +90,7 @@ for row in range(n_grid_cells):
       
 ```
 
-YOLOv2 predicts parametrized coordinates that must be converted to full size by multiplying them by 32! You can see other EQUIVALENT ways to do this but this one works. 
+YOLOv2 predicts parametrized values that must be converted to full size by multiplying them by 32! You can see other EQUIVALENT ways to do this but this one works fine.
 
 
 #### Notes
@@ -96,4 +98,4 @@ YOLOv2 predicts parametrized coordinates that must be converted to full size by 
 - The code runs at ~15fps on my laptop which has a 2GB Nvidia GeForce GTX 960M GPU
 - This implementation does not have the training part, I'm working on it! 
 
-If you have questions do not wait! I'm looking forward to help
+If you have questions or suggestions do not wait! I'm looking forward to help
