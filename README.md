@@ -103,6 +103,6 @@ YOLOv2 predicts parametrized values that must be converted to full size by multi
 #### Notes
 
 - The code runs at ~15fps on my laptop which has a 2GB Nvidia GeForce GTX 960M GPU
-- This implementation does not have the training part, I'm working on it! 
+- This implementation does not have the training part
 
 If you have questions or suggestions do not wait! I'm looking forward to help
