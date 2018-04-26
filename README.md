@@ -1,8 +1,11 @@
 # TinyYOLOv2 in Tensorflow made easier
 
-### What this code does: extracts weights from binary file, assigns them to TF network, saves ckpt, performs detection on an input image or webcam
-### What this code does NOT: train in any way YOLOv2 for any dataset
+### What this code does 
+extracts weights from binary file, assigns them to TF network, saves ckpt, performs detection on an input image or webcam
+### What this code does NOT
+train in any way YOLOv2 for any dataset
 
+### Description
 I've been searching for a Tensorflow implementation of YOLOv2 for a while but the darknet version and derivatives are not really easy to understand. This one is an hopefully easier-to-understand version of Tiny YOLOv2. The weight extraction, weights structure, weight assignment, network, inference and postprocessing are made as simple as possible.
 
 The output of this implementation on the test image "dog.jpg" is the following:
