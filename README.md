@@ -21,7 +21,7 @@ Just to be clear, this implementation is called "tiny-yolo-voc" on pjreddie's si
 ### The code is organized in this way:
 
 - weights_loader.py : loads the weights from pjreddie's binary weights file into the tensorflow network and saves the ckpt
-- net.py : contains the definition of the Tiny YOLOv2 network as defined in pjreddie's cfg file https://github.com/pjreddie/darknet/blob/master/cfg/tiny-yolo-voc.cfg
+- net.py : contains the definition of the Tiny YOLOv2 network as defined in pjreddie's cfg file https://github.com/pjreddie/darknet/blob/master/cfg/yolov2-tiny-voc.cfg
 - test.py : performs detection on an input_image that you can define in the main. Outputs the input_image with B-Boxes
 - test_webcam.py: performs detection on the webcam. It is exactly like test.py but some functions are slightly modified to take directly the frames from the webcam as inputs (instead of the image_path).
 
@@ -47,7 +47,7 @@ I've implemented everything with Tensorflow 1.0, Ubuntu 16.04, Numpy 1.13.0, Pyt
 
 I've been struggling on understanding how the binary weights file was written. I hope to save you some time by explaining how I imported the weights into a Tensorflow network:
 
-- Download the binary file from pjreddie's site: https://pjreddie.com/media/files/tiny-yolo-voc.weights 
+- Download the binary file from pjreddie's site: https://pjreddie.com/media/files/yolov2-tiny-voc.weights 
 - Extract the weights from binary to a numpy float32 array with  weight_array = np.fromfile(weights_path, dtype='f')
 - Delete the first 4 numbers because they are not relevant
 - Define a function ( load_conv_layer ) to take a part of the array and assign it to the Tensorflow variables of the net
