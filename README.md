@@ -28,7 +28,7 @@ Just to be clear, this implementation is called "tiny-yolo-voc" on pjreddie's si
 ### To use this code:
 
 - Clone the project and place it where you want
-- Download the binary file (~60MB) from pjreddie's site: https://pjreddie.com/media/files/tiny-yolo-voc.weights and place it into the folder where the scripts are
+- Download the binary file (~60MB) from pjreddie's site: https://pjreddie.com/media/files/yolov2-tiny-voc.weights and place it into the folder where the scripts are
 - Launch test.py or test_webcam.py. Change the input_img_path and the weights_path in the main if you want, now the network has "dog.jpg" as input_img. The code is now configured to run with weights and input image in the same folder as the script.
 
 ```python
