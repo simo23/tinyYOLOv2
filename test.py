@@ -5,6 +5,8 @@ import net
 import weights_loader
 import cv2
 import warnings
+import glob
+
 warnings.filterwarnings('ignore')
 
 
@@ -47,28 +49,30 @@ def non_maximal_suppression(thresholded_predictions,iou_threshold):
 
   nms_predictions = []
 
-  # Add the best B-Box because it will never be deleted
-  nms_predictions.append(thresholded_predictions[0])
+  if len(thresholded_predictions) > 0:
 
-  # For each B-Box (starting from the 2nd) check its iou with the higher score B-Boxes
-  # thresholded_predictions[i][0] = [x1,y1,x2,y2]
-  i = 1
-  while i < len(thresholded_predictions):
-    n_boxes_to_check = len(nms_predictions)
-    #print('N boxes to check = {}'.format(n_boxes_to_check))
-    to_delete = False
+      # Add the best B-Box because it will never be deleted
+      nms_predictions.append(thresholded_predictions[0])
 
-    j = 0
-    while j < n_boxes_to_check:
-        curr_iou = iou(thresholded_predictions[i][0],nms_predictions[j][0])
-        if(curr_iou > iou_threshold ):
-            to_delete = True
-        #print('Checking box {} vs {}: IOU = {} , To delete = {}'.format(thresholded_predictions[i][0],nms_predictions[j][0],curr_iou,to_delete))
-        j = j+1
+      # For each B-Box (starting from the 2nd) check its iou with the higher score B-Boxes
+      # thresholded_predictions[i][0] = [x1,y1,x2,y2]
+      i = 1
+      while i < len(thresholded_predictions):
+        n_boxes_to_check = len(nms_predictions)
+        #print('N boxes to check = {}'.format(n_boxes_to_check))
+        to_delete = False
 
-    if to_delete == False:
-        nms_predictions.append(thresholded_predictions[i])
-    i = i+1
+        j = 0
+        while j < n_boxes_to_check:
+            curr_iou = iou(thresholded_predictions[i][0],nms_predictions[j][0])
+            if(curr_iou > iou_threshold ):
+                to_delete = True
+            #print('Checking box {} vs {}: IOU = {} , To delete = {}'.format(thresholded_predictions[i][0],nms_predictions[j][0],curr_iou,to_delete))
+            j = j+1
+
+        if to_delete == False:
+            nms_predictions.append(thresholded_predictions[i])
+        i = i+1
 
   return nms_predictions
 
@@ -165,6 +169,9 @@ def postprocessing(predictions,input_img_path,score_threshold,iou_threshold,inpu
         bottom = int(center_y + (roi_h/2.))
         
         if( (final_confidence * best_class_score) > score_threshold):
+          print("final_confidence {}".format(final_confidence))
+          print("best_class_score {}".format(best_class_score))
+          print("best_class {}".format(best_class))
           thresholded_predictions.append([[left,top,right,bottom],final_confidence * best_class_score,classes[best_class]])
 
   # Sort the B-boxes by their final score
@@ -211,8 +218,11 @@ def main(_):
 
 	# Definition of the paths
     weights_path = './tiny-yolo-voc.weights'
-    input_img_path = './horses.jpg'
-    output_image_path = './output.jpg'
+
+    # process all images in imgs dir
+    input_imgs = glob.glob("./imgs/*.jpg")
+    output_imgs = [s + ".out.jpg" for s in input_imgs]
+    in_out = zip(input_imgs, output_imgs)
 
     # If you do not have the checkpoint yet keep it like this! When you will run test.py for the first time it will be created automatically
     ckpt_folder_path = './ckpt/'
@@ -232,18 +242,21 @@ def main(_):
     saver = tf.train.Saver()
     _ = weights_loader.load(sess,weights_path,ckpt_folder_path,saver)
 
-    # Preprocess the input image
-    print('Preprocessing...')
-    preprocessed_image = preprocessing(input_img_path,input_height,input_width)
+    for input_img_path, output_image_path in in_out:
+        print("---------- processing {} => {} ------------".format(input_img_path, output_image_path))
+        # Preprocess the input image
+        print('Preprocessing...')
+        preprocessed_image = preprocessing(input_img_path,input_height,input_width)
 
-    # Compute the predictions on the input image
-    print('Computing predictions...')
-    predictions = inference(sess,preprocessed_image)
+        # Compute the predictions on the input image
+        print('Computing predictions...')
+        predictions = inference(sess,preprocessed_image)
 
-    # Postprocess the predictions and save the output image
-    print('Postprocessing...')
-    output_image = postprocessing(predictions,input_img_path,score_threshold,iou_threshold,input_height,input_width)
-    cv2.imwrite(output_image_path,output_image)
+        # Postprocess the predictions and save the output image
+        print('Postprocessing...')
+        output_image = postprocessing(predictions,input_img_path,score_threshold,iou_threshold,input_height,input_width)
+        cv2.imwrite(output_image_path,output_image)
+
 
 if __name__ == '__main__':
      tf.app.run(main=main) 
