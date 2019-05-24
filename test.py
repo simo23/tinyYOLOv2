@@ -86,9 +86,7 @@ def preprocessing(input_img_path,input_height,input_width):
   image_data /= 255.
 
   # BGR -> RGB? The results do not change much
-  # copied_image = image_data
-  #image_data[:,:,2] = copied_image[:,:,0]
-  #image_data[:,:,0] = copied_image[:,:,2]
+  # image_data = cv2.cvtColor(image_data, cv2.COLOR_BGR2RGB)
 
   # Add the dimension relative to the batch size needed for the input placeholder "x"
   image_array = np.expand_dims(image_data, 0)  # Add batch dimension
